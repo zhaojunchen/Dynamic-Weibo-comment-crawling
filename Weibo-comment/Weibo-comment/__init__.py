@@ -115,8 +115,8 @@ if __name__ == '__main__':
     cookie = None
     if cookie:  # document.cookie
         headers["Cookie"] = cookie
-    print(headers)
-    search = "魏晨结婚"
+    search = input("请输入微博查询关键字：")
+    search = search.strip()
     starts_ajax = get_hot_mid_by_search(search)
     i = -1
     threads = []
