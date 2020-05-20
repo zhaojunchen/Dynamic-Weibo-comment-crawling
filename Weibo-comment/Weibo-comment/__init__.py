@@ -35,7 +35,8 @@ def get_url(url: str, f=None, headers=headers):
     c = []
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
-        print("Ajax Response Error")
+        print("Ajax Response Error\n 尝试访问在IE更换Cookie")
+        print("参考教程Cookie部分  https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/tree/master/Weibo-comment")
         return None
     response = json.loads(response.text)
     if response:
@@ -123,5 +124,5 @@ if __name__ == '__main__':
         print(start)
         hot_ajax(start)
     print(len(result))
-    with open("./" + "search" + ".txt", "w", encoding="utf-8") as f:
+    with open("./" + search + ".txt", "w", encoding="utf-8") as f:
         f.writelines(result)
