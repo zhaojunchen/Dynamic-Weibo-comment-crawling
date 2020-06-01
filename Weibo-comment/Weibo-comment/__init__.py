@@ -11,17 +11,33 @@ from urllib import parse
 
 lock = threading.Lock()  # 申请一把锁
 result = []
+global headers
+headers_str = """
+      Accept: text/html, application/xhtml+xml, image/jxr, */*
+Accept-Encoding: gzip, deflate
+Accept-Language: zh-Hans-CN, zh-Hans; q=0.5
+Cookie: SINAGLOBAL=8384493771349.852.1591017135494; __gads=ID=4793aec874b0ea09:T=1591017139:S=ALNI_MZxSwNGlcR2-JOmn0s4dy8OL-J4ZQ; _gid=GA1.2.1084706662.1591017132; _ga=GA1.2.299669732.1591017132; ULV=1591017135505:1:1:1:8384493771349.852.1591017135494:; SUBP=0033WrSXqPxfM72-Ws9jqgMF55529P9D9W5y8TGGKcjNbhXKfILZ2066; SUB=_2AkMpiHCGf8NxqwJRmf4dz2rlao52yQDEieKf1IFdJRMxHRl-yT92qnwHtRB6AgheaYPIkmnFYP2X5LOxHmDcgGsoHgGK; login_sid_t=a709781483e744c49335973eb806fae2; cross_origin_proto=SSL; _s_tentry=-; Apache=8384493771349.852.1591017135494; Ugrow-G0=6fd5dedc9d0f894fec342d051b79679e; TC-V5-G0=eb26629f4af10d42f0485dca5a8e5e20
+Host: www.weibo.com
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko
+"""
 
-# 修改cookies得到新的请求  在合适的浏览器copy出请求的参数
-headers = {
-    'Accept': 'image/gif, image/jpeg, image/pjpeg, application/x-ms-application, application/xaml+xml, application/x-ms-xbap, */*',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'zh-Hans-CN, zh-Hans; q=0.5',
-    'Connection': 'Keep-Alive',
-    'Cookie': 'SUB=_2AkMpmGNfdcPxrAZZkf8TymrmaYhH-jyaTQqpAn7uJhMyAxh77lUCqSVutBF-XEcZoLdAAUhhdFH_OTIESN5YwCgm; _s_tentry=-; Apache=8383124929170.817.1589954045328; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; Ugrow-G0=140ad66ad7317901fc818d7fd7743564; TC-Page-G0=62b98c0fc3e291bc0c7511933c1b13ad|1589963875|1589963875; UOR=,,login.sina.com.cn; SINAGLOBAL=7390078349060.063.1589116949157; webim_unReadCount=%7B%22time%22%3A1589963878449%2C%22dm_pub_total%22%3A0%2C%22chat_group_client%22%3A0%2C%22chat_group_notice%22%3A0%2C%22allcountNum%22%3A39%2C%22msgbox%22%3A0%7D; ULV=1589954045516:5:5:3:8383124929170.817.1589954045328:1589727942460; SUHB=0nleBnbCAt0qZa; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; wb_view_log_5897661455=1280*8002; login_sid_t=cf5e8bd6bb1862b4dacf3cdf346c4223; cross_origin_proto=SSL; WBStorage=42212210b087ca50|undefined; wb_view_log=1280*8002',
-    'Host': 'weibo.com',
-    'User-Agent': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.30729; .NET CLR 3.5.30729)'
-}
+
+def init_headers(headers: str):
+    headers_dict = {}
+    headers.strip()
+    lines = headers.split('\n')
+    for line in lines:
+        if not line:
+            continue
+        line = line.strip()
+        pos = line.find(":")
+        key = line[0:pos].strip()
+        value = line[pos + 1:].strip()
+        headers_dict[key] = value
+    return headers_dict
+
+
+headers = init_headers(headers_str)
 
 
 def __rnd():
@@ -31,14 +47,18 @@ def __rnd():
 
 
 # ajax请求
-def get_url(url: str, f=None, headers=headers):
+def get_url(url: str, f=None):
     c = []
+    # print(headers)
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
+        print(response)
         print("Ajax Response Error\n 尝试访问在IE更换Cookie")
         print("参考教程Cookie部分  https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/tree/master/Weibo-comment")
         return None
+    # print(response.text)
     response = json.loads(response.text)
+
     if response:
         soup = BeautifulSoup(response.get('data').get('html'), "lxml")
         comments = soup.find_all("div", attrs={"class": "WB_text"})
@@ -74,7 +94,6 @@ def get_url(url: str, f=None, headers=headers):
 def get_hot_by_search(url):
     response = requests.get(url)
     html = response.content.decode("utf-8")
-    print(html)
     html = BeautifulSoup(html, "lxml")
     cards = html.find_all("div", attrs={"class": "card-wrap"})
     hot_mids = []
@@ -91,11 +110,31 @@ def get_hot_by_search(url):
 
 
 # 获取开始请求
-def get_hot_mid_by_search(search: str):
+def get_hot_mid_by_search_3(search: str):
     search = parse.quote(search)
     search = "https://s.weibo.com/weibo?q={0}&".format(search)
     print(search)
     hot_mids = get_hot_by_search(search)
+    print(hot_mids)
+    hot_ajax_start = []
+    for mid in hot_mids:
+        hot_ajax_start.append(
+            "https://weibo.com/aj/v6/comment/big?ajwvr=6&id={0}&from=singleWeiBo&__rnd={1}".format(mid, __rnd()))
+    return hot_ajax_start
+
+
+# 获取开始请求
+def get_hot_mid_by_search(search: str):
+    search = parse.quote(search)
+    search = "https://s.weibo.com/hot?q=%23{0}%23".format(search)
+    print(search)
+    response = requests.get(search)
+    html = response.content.decode("utf-8")
+    html = BeautifulSoup(html, "lxml")
+    cards = html.find_all("div", attrs={"class": "card-wrap"})
+    hot_mids = []
+    for card in cards:
+        hot_mids.append(card.get("mid"))
     print(hot_mids)
     hot_ajax_start = []
     for mid in hot_mids:
@@ -111,10 +150,7 @@ def hot_ajax(url):
 
 
 if __name__ == '__main__':
-    cookie = "_s_tentry=-; Apache=8383124929170.817.1589954045328; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; Ugrow-G0=140ad66ad7317901fc818d7fd7743564; TC-Page-G0=62b98c0fc3e291bc0c7511933c1b13ad|1589963875|1589963875; UOR=,,login.sina.com.cn; SINAGLOBAL=7390078349060.063.1589116949157; webim_unReadCount=%7B%22time%22%3A1589963878449%2C%22dm_pub_total%22%3A0%2C%22chat_group_client%22%3A0%2C%22chat_group_notice%22%3A0%2C%22allcountNum%22%3A39%2C%22msgbox%22%3A0%7D; ULV=1589954045516:5:5:3:8383124929170.817.1589954045328:1589727942460; SUHB=0nleBnbCAt0qZa; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; wb_view_log_5897661455=1280*8002; login_sid_t=cf5e8bd6bb1862b4dacf3cdf346c4223; cross_origin_proto=SSL; WBStorage=42212210b087ca50|undefined; wb_view_log=1280*8002"
-    cookie = None
-    if cookie:  # document.cookie
-        headers["Cookie"] = cookie
+    print(headers)
     search = input("请输入微博查询关键字：")
     search = search.strip()
     starts_ajax = get_hot_mid_by_search(search)
