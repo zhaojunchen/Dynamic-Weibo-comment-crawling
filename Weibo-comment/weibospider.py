@@ -161,11 +161,23 @@ def hot_ajax(url):
         url = get_url(url)
 
 
+guide = """
+更新cookie : https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/blob/master/Weibo-comment/README.md#%E5%85%B3%E4%BA%8Ecookie
+git readme: https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/blob/master/Weibo-comment/README.md
+"""
+
+
 def start():
     global result_comments
     result_comments = []
     global headers
     headers = {}
+
+    print(guide)
+    update = input("更新cookie? Y or N")
+    if update == "y" or update == "Y":
+        global headers_str
+        headers_str = input("cookie input:")
     headers = init_headers(headers_str)
     # 测试请求头
     print(headers)
@@ -184,4 +196,5 @@ def start():
     return result_comments
 
 
-start()
+if __name__ == '__main__':
+    start()

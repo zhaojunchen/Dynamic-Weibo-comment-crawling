@@ -384,7 +384,7 @@ def get_hot_mid_by_search(search: str):
 
 有如下规则：
 
-1. [https://s.weibo.com/weibo?q={keyword}&](https://s.weibo.com/weibo?q=刘亦菲&) 访问不要cookie！ 输入关键字，构造请求url即可
+1. `https://s.weibo.com/hot?q=%23{keyword}%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot` 访问不要cookie！ 输入关键字，构造请求url即可
 
    ```
     response = requests.get(url)
@@ -402,7 +402,7 @@ def get_hot_mid_by_search(search: str):
 
    ![image-20200606134027136](README.assets/image-20200606134027136.png)
 
-3. **F12 打开chrome开发工具：访问页面 查看请求标头**
+3. **F12 打开chrome开发工具：XHR 刷新页面 查看请求标头**
 
    ![image-20200606134442049](README.assets/image-20200606134442049.png)
 

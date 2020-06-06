@@ -1,0 +1,3 @@
+import weibospider
+
+weibospider.start()
