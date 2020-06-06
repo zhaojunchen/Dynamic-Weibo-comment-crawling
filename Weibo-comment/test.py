@@ -1,3 +1,4 @@
 import weibospider
 
-weibospider.start()
+li = weibospider.start()
+print(len(li))
