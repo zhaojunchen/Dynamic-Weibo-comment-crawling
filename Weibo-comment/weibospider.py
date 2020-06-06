@@ -1,45 +1,47 @@
-import threading
-
+import random
 import bs4
 import requests
 import json
-import os
 from bs4 import BeautifulSoup
 import time
-import re
 from urllib import parse
 
-lock = threading.Lock()  # 申请一把锁
 result = []
-global headers
+headers = {}
 headers_str = """
-Accept: text/html, application/xhtml+xml, image/jxr, */*
-Accept-Encoding: gzip, deflate
-Accept-Language: zh-Hans-CN, zh-Hans; q=0.5
-Cookie: SINAGLOBAL=8384493771349.852.1591017135494; __gads=ID=4793aec874b0ea09:T=1591017139:S=ALNI_MZxSwNGlcR2-JOmn0s4dy8OL-J4ZQ; _gid=GA1.2.1084706662.1591017132; _ga=GA1.2.299669732.1591017132; ULV=1591017135505:1:1:1:8384493771349.852.1591017135494:; SUBP=0033WrSXqPxfM72-Ws9jqgMF55529P9D9W5y8TGGKcjNbhXKfILZ2066; SUB=_2AkMpiHCGf8NxqwJRmf4dz2rlao52yQDEieKf1IFdJRMxHRl-yT92qnwHtRB6AgheaYPIkmnFYP2X5LOxHmDcgGsoHgGK; login_sid_t=a709781483e744c49335973eb806fae2; cross_origin_proto=SSL; _s_tentry=-; Apache=8384493771349.852.1591017135494; Ugrow-G0=6fd5dedc9d0f894fec342d051b79679e; TC-V5-G0=eb26629f4af10d42f0485dca5a8e5e20
-Host: www.weibo.com
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Accept-Encoding: gzip, deflate, br
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
+Cache-Control: no-cache
+Connection: keep-alive
+Cookie: _ga=GA1.2.956605479.1589971437; SCF=Aj1E_ydepWREVVJcOqZjRJziaqxHCYKn-Gv-RkCpdD3-yK0QtP9MXnGzRKqOklSAvFoDHGPZRikkC-e2p5i6hbM.; SINAGLOBAL=1876006436140.0298.1580887962558; SUB=_2AkMpmYbcdcPxrAZZkf8TymrmaYhH-jyaTO8qAn7uJhMyAxhu7nQ0qSVutBF-XFs9GyfhVYaW0Vs_ukVHTLppXU7j; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; SUHB=0C1ydjo7snj-l2; UOR=,,www.baidu.com; login_sid_t=baa7692170c8e9d1ac377d5af586fc47; cross_origin_proto=SSL; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; _s_tentry=-; Apache=8320276427423.147.1591405686498; ULV=1591405686518:20:6:6:8320276427423.147.1591405686498:1591365844522
+Host: weibo.com
+Pragma: no-cache
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36
 """
 
 
-def init_headers(headers: str):
-    headers_dict = {}
-    headers.strip()
-    lines = headers.split('\n')
+def init_headers(headers_string: str):
+    headers_local = {}
+    headers_string.strip()
+    lines = headers_string.split('\n')
     for line in lines:
         if not line:
             continue
         line = line.strip()
-        pos = line.find(":")
+        pos = line.index(":", 1)
         key = line[0:pos].strip()
         value = line[pos + 1:].strip()
-        headers_dict[key] = value
-    return headers_dict
+        headers_local[key] = value
+    return headers_local
 
 
-headers = init_headers(headers_str)
-
-
+# weibo format rnd timestamp
 def __rnd():
     t = time.time()
     t = "{:.3f}".format(t).replace(".", "")
@@ -47,33 +49,38 @@ def __rnd():
 
 
 # ajax请求
-def get_url(url: str, f=None):
-    c = []
-    # print(headers)
+def get_url(url: str):
+    comment_content = []
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
         print(response)
         print("Ajax Response Error\n 尝试访问在IE更换Cookie")
         print("参考教程Cookie部分  https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/tree/master/Weibo-comment")
         return None
-    # print(response.text)
-    response = json.loads(response.text)
+    # print(response.status_code)
+    if response.text == "":
+        print("response is null")
+        return None
+    try:
+        response = json.loads(response.text)
+    except Exception as e:
+        print(e, end=" ")
+        print("response error")
+        return None
 
     if response:
         soup = BeautifulSoup(response.get('data').get('html'), "lxml")
         comments = soup.find_all("div", attrs={"class": "WB_text"})
         for comment in comments:
             s = "".join([t for t in comment.contents if type(t) == bs4.element.NavigableString])
-            s = s.strip().replace("\n", "").lstrip("：").replace("等人", "")
+            s = s.strip().replace("\n", "").lstrip("：").replace("等人", "").strip()
             if s:
                 print(s)
-                c.append(s + "\n")
+                comment_content.append(s)
             # https://www.zhihu.com/question/56861741
-        if f:
-            f.writelines(c)
+
         global result
-        with lock:
-            result += c
+        result += comment_content
         action_data = soup.find("a", attrs={"action-type": "click_more_comment"})
         if not action_data:
             action_data = soup.find("div", attrs={"node-type": "comment_loading"})
@@ -110,20 +117,6 @@ def get_hot_by_search(url):
 
 
 # 获取开始请求
-def get_hot_mid_by_search_3(search: str):
-    search = parse.quote(search)
-    search = "https://s.weibo.com/weibo?q={0}&".format(search)
-    print(search)
-    hot_mids = get_hot_by_search(search)
-    print(hot_mids)
-    hot_ajax_start = []
-    for mid in hot_mids:
-        hot_ajax_start.append(
-            "https://weibo.com/aj/v6/comment/big?ajwvr=6&id={0}&from=singleWeiBo&__rnd={1}".format(mid, __rnd()))
-    return hot_ajax_start
-
-
-# 获取开始请求
 def get_hot_mid_by_search(search: str):
     search = parse.quote(search)
     search = "https://s.weibo.com/hot?q=%23{0}%23".format(search)
@@ -134,7 +127,10 @@ def get_hot_mid_by_search(search: str):
     cards = html.find_all("div", attrs={"class": "card-wrap"})
     hot_mids = []
     for card in cards:
-        hot_mids.append(card.get("mid"))
+        mid = card.get("mid")
+        if mid:
+            hot_mids.append(mid)
+    print("热门mid")
     print(hot_mids)
     hot_ajax_start = []
     for mid in hot_mids:
@@ -143,22 +139,36 @@ def get_hot_mid_by_search(search: str):
     return hot_ajax_start
 
 
+# 起始url 延伸获取所有评论
 def hot_ajax(url):
     while url:
-        time.sleep(1)
+        time.sleep(random.randint(1, 3))
+        if url:
+            print(url)
         url = get_url(url)
 
 
-if __name__ == '__main__':
+def start():
+    global result
+    result = []
+    global headers
+    headers = {}
+    headers = init_headers(headers_str)
+    # 测试请求头
     print(headers)
     search = input("请输入微博查询关键字：")
     search = search.strip()
+    print("搜索请求为:" + search)
+    # 获取每一个post的初始评论请求
     starts_ajax = get_hot_mid_by_search(search)
-    i = -1
-    threads = []
-    for start in starts_ajax:
-        print(start)
-        hot_ajax(start)
+    for each in starts_ajax:
+        print(each)
+        # 请求完整的一级评论
+        hot_ajax(each)
     print(len(result))
     with open("./" + search + ".txt", "w", encoding="utf-8") as f:
-        f.writelines(result)
+        f.write('\n'.join(result))
+    return result
+
+
+start()
