@@ -1,5 +1,7 @@
 # 微博热门评论爬取
 
+[TOC]
+
 ## 爬虫目标
 
 给定关键词keyword，爬取搜索页面 `https://s.weibo.com/hot?q=%23{keyword}%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot` 页面（只爬取第一页）的所有一级评论及其点赞数目，并保存于txt，用于情感分析材料。
@@ -154,7 +156,7 @@ while True:
 
 
 
-## 微博评论
+## 评论抓取
 
 ### 评论分析
 
@@ -339,139 +341,15 @@ def get_hot_mid_by_search(search: str):
 
 ![image-20200606132703331](README.assets/image-20200606132703331.png)
 
-实际上一个root_comment只有一个一级评论和一个一级评论的赞。但是由于部分二级评论嵌套在一级里面，一个root_comment
+实际上一个root_comment只有一个一级评论和一个一级评论的赞。但是由于部分二级评论嵌套在一级里面，一个root_comment存在多个赞和评论！继续分析结构
 
-### 关于cookie
+![image-20200606133443324](README.assets/image-20200606133443324.png)
 
-通过反复的测试
+展示内容先是一级然后是2级，所以直接通过root_comment搜出首个赞和评论，就是正确的一级评论！顺序是一一对应的！
 
-有如下规则：
-
-1. [https://s.weibo.com/weibo?q={keyword}&](https://s.weibo.com/weibo?q=刘亦菲&) 访问不要cookie！ 输入关键字，构造请求url即可
-
-   ```
-    response = requests.get(url)
-   ```
-
-2. AJAX信息爬取可以不登录，但是一定需要headers和cookie
-
-   为了简化爬取，最好使用不登录的AJAX cookie去爬取（防止用力过猛封号），这里我使用chrome去请求ajax的开始url：例如
-
-   ```
-   https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4506646188218361&from=singleWeiBo&__rnd=1589974845914
-   ```
-
-   在IE输入，会输出一个json文档：
-
-   ![image-20200520194159210](README.assets/image-20200520194159210.png)
-
-![image-20200520194209382](README.assets/image-20200520194209382.png)
-
-
-
-​		**打开IE开发工具：访问页面 查看请求标头**
-
-​		![](README.assets/image-20200520194406851.png)
-
-​	
-
-**构造正确的标头：例如程序使用的header：基于chrome的不登陆cookie**
-
-
-
-3. 爬取使用单线程、定时sleep，以防止cookie被封！ 下图是我一次用登陆微博账号的cookie爬取数据，爬取的太凶猛了，导致chrome无法正确加载！ AJAX也无法正常请求！
-
-   ![image-20200520195041601](README.assets/image-20200520195041601.png)
-   
-   ![image-20200520195330056](README.assets/image-20200520195330056.png)
-
-
-
-## 完整脚本
-
-### 用法：
-
-运行脚本：`python3 Weibo-comment/__init__.py`
-
-输入查询关键字 `请输入微博查询关键字：刘亦菲`
-
-输出 `控制台信息`、`本机目录下包含{关键字}热门话题评论的 {关键字}.txt  `
-
-![image-20200520200213960](README.assets/image-20200520200213960.png)
-
-
+**解析的代码：**
 
 ```
-import random
-import bs4
-import requests
-import json
-from bs4 import BeautifulSoup
-import time
-from urllib import parse
-
-result_comments = []
-headers = {}
-headers_str = """
-Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
-Accept-Encoding: gzip, deflate, br
-Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
-Cache-Control: no-cache
-Connection: keep-alive
-Cookie: _ga=GA1.2.956605479.1589971437; SCF=Aj1E_ydepWREVVJcOqZjRJziaqxHCYKn-Gv-RkCpdD3-yK0QtP9MXnGzRKqOklSAvFoDHGPZRikkC-e2p5i6hbM.; SINAGLOBAL=1876006436140.0298.1580887962558; SUB=_2AkMpmYbcdcPxrAZZkf8TymrmaYhH-jyaTO8qAn7uJhMyAxhu7nQ0qSVutBF-XFs9GyfhVYaW0Vs_ukVHTLppXU7j; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; SUHB=0C1ydjo7snj-l2; UOR=,,www.baidu.com; login_sid_t=baa7692170c8e9d1ac377d5af586fc47; cross_origin_proto=SSL; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; _s_tentry=-; Apache=8320276427423.147.1591405686498; ULV=1591405686518:20:6:6:8320276427423.147.1591405686498:1591365844522
-Host: weibo.com
-Pragma: no-cache
-Sec-Fetch-Dest: document
-Sec-Fetch-Mode: navigate
-Sec-Fetch-Site: none
-Sec-Fetch-User: ?1
-Upgrade-Insecure-Requests: 1
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36
-"""
-
-
-def init_headers(headers_string: str):
-    headers_local = {}
-    headers_string.strip()
-    lines = headers_string.split('\n')
-    for line in lines:
-        if not line:
-            continue
-        line = line.strip()
-        pos = line.index(":", 1)
-        key = line[0:pos].strip()
-        value = line[pos + 1:].strip()
-        headers_local[key] = value
-    return headers_local
-
-
-# weibo format rnd timestamp
-def __rnd():
-    t = time.time()
-    t = "{:.3f}".format(t).replace(".", "")
-    return t
-
-
-# ajax请求
-def get_url(url: str):
-    global result_comments
-    response = requests.get(url, headers=headers)
-    if response.status_code != 200:
-        print(response)
-        print("Ajax Response Error\n 尝试访问在IE更换Cookie")
-        print("参考教程Cookie部分  https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/tree/master/Weibo-comment")
-        return None
-    # print(response.status_code)
-    if response.text == "":
-        print("response is null")
-        return None
-    try:
-        response = json.loads(response.text)
-    except Exception as e:
-        print(e, end=" ")
-        print("response error")
-        return None
-    # 解析响应内容
     if response:
         soup = BeautifulSoup(response.get('data').get('html'), "lxml")
         # 解析评论内容
@@ -496,98 +374,79 @@ def get_url(url: str):
             print(target)
             result_comments.append(target)
 
-            # https://www.zhihu.com/question/56861741
-
-        action_data = soup.find("a", attrs={"action-type": "click_more_comment"})
-        if not action_data:
-            action_data = soup.find("div", attrs={"node-type": "comment_loading"})
-            if not action_data:
-                return None
-        action_data = action_data.get("action-data").strip().replace("amp;", "")
-        # print("action_data is " + action_data)
-        dict = {"action_data": action_data, "rnd": __rnd()}
-        if action_data:
-            url = "https://weibo.com/aj/v6/comment/big?ajwvr=6&{action_data}&from=singleWeiBo&__rnd={rnd}".format(
-                **dict)
-        else:
-            url = None
-    return url
-
-
-# 热门话题的url mid解析
-def get_hot_by_search(url):
-    response = requests.get(url)
-    html = response.content.decode("utf-8")
-    html = BeautifulSoup(html, "lxml")
-    cards = html.find_all("div", attrs={"class": "card-wrap"})
-    hot_mids = []
-    for card in cards:
-        titles = card.find_all("a")
-        for title in titles:
-            if title:
-                if "热门" == title.text:
-                    print(title.text)
-                    hot_mids.append(card.get("mid"))
-                    break
-    print(hot_mids)
-    return hot_mids
-
-
-# 获取开始请求
-def get_hot_mid_by_search(search: str):
-    search = parse.quote(search)
-    search = "https://s.weibo.com/hot?q=%23{0}%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot".format(search)
-    print(search)
-    response = requests.get(search)
-    html = response.content.decode("utf-8")
-    html = BeautifulSoup(html, "lxml")
-    cards = html.find_all("div", attrs={"class": "card-wrap"})
-    hot_mids = []
-    for card in cards:
-        mid = card.get("mid")
-        if mid:
-            hot_mids.append(mid)
-    print("热门mid", end="\t")
-    print(hot_mids)
-    hot_ajax_start = []
-    for mid in hot_mids:
-        hot_ajax_start.append(
-            "https://weibo.com/aj/v6/comment/big?ajwvr=6&id={0}&from=singleWeiBo&__rnd={1}".format(mid, __rnd()))
-    return hot_ajax_start
-
-
-# 起始url 延伸获取所有评论
-def hot_ajax(url):
-    while url:
-        time.sleep(random.randint(1, 3))
-        if url:
-            print(url)
-        url = get_url(url)
-
-
-def start():
-    global result_comments
-    result_comments = []
-    global headers
-    headers = {}
-    headers = init_headers(headers_str)
-    # 测试请求头
-    print(headers)
-    search = input("请输入微博查询关键字：")
-    search = search.strip()
-    print("搜索请求为:" + search)
-    # 获取每一个post的初始评论请求
-    starts_ajax = get_hot_mid_by_search(search)
-    for each in starts_ajax:
-        print("开始一个post的评论 yes!!!")
-        # 请求完整的一级评论
-        hot_ajax(each)
-    print(len(result_comments))
-    with open("./" + search + ".txt", "w", encoding="utf-8") as f:
-        f.write('\n'.join(result_comments))
-    return result_comments
-
-
-start()
 ```
+
+
+
+### 关于cookie
+
+**以下的内容通过爬虫反复的测试而来**
+
+有如下规则：
+
+1. [https://s.weibo.com/weibo?q={keyword}&](https://s.weibo.com/weibo?q=刘亦菲&) 访问不要cookie！ 输入关键字，构造请求url即可
+
+   ```
+    response = requests.get(url)
+   ```
+
+2. AJAX信息爬取可以不登录，但是一定需要headers和cookie
+
+   为了简化爬取，最好使用不登录的AJAX cookie去爬取（防止用力过猛封号），这里我使用chrome去请求ajax的开始url：例如
+
+   ```
+   https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4506646188218361&from=singleWeiBo&__rnd=1589974845914
+   ```
+
+   在chrome输入上述的url，会输出一个json内容：
+
+   ![image-20200606134027136](README.assets/image-20200606134027136.png)
+
+3. **F12 打开chrome开发工具：访问页面 查看请求标头**
+
+   ![image-20200606134442049](README.assets/image-20200606134442049.png)
+
+   
+
+4. 复制内容程序的cookie字符串！
+
+   ```
+   headers_str = """
+   Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+   Accept-Encoding: gzip, deflate, br
+   Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
+   Cache-Control: no-cache
+   ...etc
+   '''
+   ```
+
+5. 爬取使用单线程、定时sleep，以防止cookie被封！ 下图是我一次用登陆微博账号的cookie爬取数据，爬取的太凶猛了，导致chrome无法正确加载！ AJAX也无法正常请求！
+
+   ![image-20200520195041601](README.assets/image-20200520195041601.png)
+
+   ![image-20200520195330056](README.assets/image-20200520195330056.png)
+
+
+
+### cookie更新
+
+参照上面关于cookie的第2、3、4步骤，替换程序的cookie字符串！
+
+## 脚本用法
+
+### 
+
+运行脚本：`python3 weibospider.py`
+
+输入查询关键字 `请输入微博查询关键字：刘亦菲`
+
+输出 `控制台信息`、`本机目录下包含{关键字}热门话题评论的 {关键字}.txt  list列表`
+
+![image-20200520200213960](README.assets/image-20200520200213960.png)
+
+
+
+源代码在[gihhub](https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/blob/master/Weibo-comment/weibospider.py) 可找到！
+
+
 
