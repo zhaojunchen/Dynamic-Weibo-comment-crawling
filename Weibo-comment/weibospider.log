@@ -1,0 +1,160 @@
+
+更新cookie : https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/blob/master/Weibo-comment/README.md#%E5%85%B3%E4%BA%8Ecookie
+git readme: https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/blob/master/Weibo-comment/README.md
+
+更新cookie? Y or N:输入关键热词:
+更新cookie : https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/blob/master/Weibo-comment/README.md#%E5%85%B3%E4%BA%8Ecookie
+git readme: https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/blob/master/Weibo-comment/README.md
+
+更新cookie? Y or N:
+更新cookie : https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/blob/master/Weibo-comment/README.md#%E5%85%B3%E4%BA%8Ecookie
+git readme: https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/blob/master/Weibo-comment/README.md
+
+{'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9', 'Accept-Encoding': 'gzip, deflate, br', 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive', 'Cookie': '_ga=GA1.2.956605479.1589971437; SCF=Aj1E_ydepWREVVJcOqZjRJziaqxHCYKn-Gv-RkCpdD3-yK0QtP9MXnGzRKqOklSAvFoDHGPZRikkC-e2p5i6hbM.; SINAGLOBAL=1876006436140.0298.1580887962558; SUB=_2AkMpmYbcdcPxrAZZkf8TymrmaYhH-jyaTO8qAn7uJhMyAxhu7nQ0qSVutBF-XFs9GyfhVYaW0Vs_ukVHTLppXU7j; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; SUHB=0C1ydjo7snj-l2; UOR=,,www.baidu.com; login_sid_t=baa7692170c8e9d1ac377d5af586fc47; cross_origin_proto=SSL; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; _s_tentry=-; Apache=8320276427423.147.1591405686498; ULV=1591405686518:20:6:6:8320276427423.147.1591405686498:1591365844522', 'Host': 'weibo.com', 'Pragma': 'no-cache', 'Sec-Fetch-Dest': 'document', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Site': 'none', 'Sec-Fetch-User': '?1', 'Upgrade-Insecure-Requests': '1', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36'}
+搜索请求为:胡歌
+https://s.weibo.com/hot?q=%23%E8%83%A1%E6%AD%8C%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot
+热门mid	['4512448222659241', '4512719158045206', '4512870274803365', '4512248708356659', '4511855463593486', '4512363569015971', '4511984692918851', '4511736704863736', '4511882864953188', '4511808851859450', '4512563243539722', '4512103103700973', '4512143229417375', '4511633751497332', '4510357634575465']
+开始一个post的评论 yes!!!
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512448222659241&from=singleWeiBo&__rnd=1591440479277
+90	:致敬！有爱的日子，有爱的一群人，感谢！
+85	:和 一起守护G7公路 守护人类共同的家园
+83	:今天是世界环境日让我们与 一起致敬绿色家园的守护者！
+68	:致敬家园守护者点赞公益达人胡歌
+52	:歌
+51	:优质偶像
+42	:跟着 守护G7
+23	:
+43	:“对于公益和环保 我的认知是勿以善小而不为  我们不要等到去做一件特别伟大的事时才铆足了劲   日常生活中要积少成多”  —胡歌 。今天和歌一起致敬默默无闻的沙漠护林者，用爱守护G7公路
+36	:让我们和 一起守护人类共同的家园
+29	:所有的伟大，源于一个勇敢的开始，让我们和 一起守护人类共同的家园吧！  [米奇比心][米奇比心]
+28	:致敬
+25	:为所有公益人点赞 让我们和 一起守护人类共同的家园
+23	:向所有坚守在公益事业上的志愿者致敬
+24	:点赞胡歌 加油
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512448222659241&root_comment_max_id=27632544582463511&root_comment_max_id_type=0&root_comment_ext_param=&page=2&filter=hot&sum_comment_number=31&filter_tips_before=0&from=singleWeiBo&__rnd=1591440481893
+23	:转发微博
+20	:
+24	:跟着胡歌做公益
+21	:保护环境，守护家园🌍🌍🌍
+19	:致敬！
+16	:致敬家园守护者
+15	:点赞胡歌
+18	:G7公路是世界上穿越沙漠最长的高速公路，为了改善沿途荒漠化的自然环境，有这样一群人，他们像守护生命一样守护着每一棵胡杨、每一棵梭梭。和 胡歌 一起守护G7公路。所有的伟大，源于一个勇敢的开始，让我们一起守护人类共同的家园！
+15	:与胡歌一起关注G7公路生态公益项目，愿更多“G7绿”铺满原先被风沙侵袭的土地
+12	:
+16	:致敬家园守护者和 一起守护G7公路
+12	:谢谢那些默默守护的人们，也表扬胡歌让我们认识了这么一群无私奉献的人们
+13	:所有的伟大，源于一个勇敢的开始，让我们和 一起守护G7公路 守护人类共同的家园
+9	:致敬家园守护者和  一起守护G7公路
+12	:致敬守护者们
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512448222659241&root_comment_max_id=27629520924061047&root_comment_max_id_type=0&root_comment_ext_param=&page=3&filter=hot&sum_comment_number=61&filter_tips_before=0&from=singleWeiBo&__rnd=1591440484485
+10	:和 一起守护G7公路。所有的伟大，源于一个勇敢的开始，让我们一起守护人类共同的家园！
+9	:和 一起守护G7公路。所有的伟大，源于一个勇敢的开始，让我们一起守护人类共同的家园！
+9	:和 一起守护G7公路。所有的伟大，源于一个勇敢的开始，让我们一起守护人类共同的家园！
+8	:感谢博主宣传正能量偶像胡歌，致敬所有默默做公益最可爱的人
+7	:让我们一起守护家园 爱自己 爱自然
+7	:一群热爱着这片土地的人！让我们和胡歌一起守护Ｇ7公路守护家园！
+6	:为所有公益人点赞 和 一起守护家园
+5	:与胡歌益起来 关注生态环境 用爱浇灌自然
+5	:一起守护我歌真棒
+5	:晚上好
+4	:
+4	://:致敬家园守护者点赞公益达人胡歌
+4	:致敬所有奉献者❤️❤️所有的伟大，源于一个勇敢的开始，让我们和 一起守护G7公路 守护人类共同的家园
+3	:正能量
+3	:致敬默默无闻的家园守护者
+请求达到用户设定的上限 结束请求
+45
+{'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9', 'Accept-Encoding': 'gzip, deflate, br', 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive', 'Cookie': '_ga=GA1.2.956605479.1589971437; SCF=Aj1E_ydepWREVVJcOqZjRJziaqxHCYKn-Gv-RkCpdD3-yK0QtP9MXnGzRKqOklSAvFoDHGPZRikkC-e2p5i6hbM.; SINAGLOBAL=1876006436140.0298.1580887962558; SUB=_2AkMpmYbcdcPxrAZZkf8TymrmaYhH-jyaTO8qAn7uJhMyAxhu7nQ0qSVutBF-XFs9GyfhVYaW0Vs_ukVHTLppXU7j; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; SUHB=0C1ydjo7snj-l2; UOR=,,www.baidu.com; login_sid_t=baa7692170c8e9d1ac377d5af586fc47; cross_origin_proto=SSL; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; _s_tentry=-; Apache=8320276427423.147.1591405686498; ULV=1591405686518:20:6:6:8320276427423.147.1591405686498:1591365844522', 'Host': 'weibo.com', 'Pragma': 'no-cache', 'Sec-Fetch-Dest': 'document', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Site': 'none', 'Sec-Fetch-User': '?1', 'Upgrade-Insecure-Requests': '1', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36'}
+搜索请求为:胡歌
+https://s.weibo.com/hot?q=%23%E8%83%A1%E6%AD%8C%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot
+热门mid	['4512448222659241', '4512719158045206', '4512870274803365', '4512248708356659', '4511855463593486', '4512363569015971', '4511984692918851', '4511736704863736', '4511882864953188', '4511808851859450', '4512563243539722', '4512103103700973', '4512143229417375', '4511633751497332', '4510357634575465']
+开始一个post的评论 yes!!!
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512448222659241&from=singleWeiBo&__rnd=1591440531790
+90	:致敬！有爱的日子，有爱的一群人，感谢！
+85	:和 一起守护G7公路 守护人类共同的家园
+83	:今天是世界环境日让我们与 一起致敬绿色家园的守护者！
+68	:致敬家园守护者点赞公益达人胡歌
+52	:歌
+51	:优质偶像
+42	:跟着 守护G7
+23	:
+43	:“对于公益和环保 我的认知是勿以善小而不为  我们不要等到去做一件特别伟大的事时才铆足了劲   日常生活中要积少成多”  —胡歌 。今天和歌一起致敬默默无闻的沙漠护林者，用爱守护G7公路
+36	:让我们和 一起守护人类共同的家园
+29	:所有的伟大，源于一个勇敢的开始，让我们和 一起守护人类共同的家园吧！  [米奇比心][米奇比心]
+28	:致敬
+25	:为所有公益人点赞 让我们和 一起守护人类共同的家园
+23	:向所有坚守在公益事业上的志愿者致敬
+24	:点赞胡歌 加油
+请求达到用户设定的上限 结束请求
+15
+15
+{'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9', 'Accept-Encoding': 'gzip, deflate, br', 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive', 'Cookie': '_ga=GA1.2.956605479.1589971437; SCF=Aj1E_ydepWREVVJcOqZjRJziaqxHCYKn-Gv-RkCpdD3-yK0QtP9MXnGzRKqOklSAvFoDHGPZRikkC-e2p5i6hbM.; SINAGLOBAL=1876006436140.0298.1580887962558; SUB=_2AkMpmYbcdcPxrAZZkf8TymrmaYhH-jyaTO8qAn7uJhMyAxhu7nQ0qSVutBF-XFs9GyfhVYaW0Vs_ukVHTLppXU7j; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; SUHB=0C1ydjo7snj-l2; UOR=,,www.baidu.com; login_sid_t=baa7692170c8e9d1ac377d5af586fc47; cross_origin_proto=SSL; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; _s_tentry=-; Apache=8320276427423.147.1591405686498; ULV=1591405686518:20:6:6:8320276427423.147.1591405686498:1591365844522', 'Host': 'weibo.com', 'Pragma': 'no-cache', 'Sec-Fetch-Dest': 'document', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Site': 'none', 'Sec-Fetch-User': '?1', 'Upgrade-Insecure-Requests': '1', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36'}
+搜索请求为:胡歌
+https://s.weibo.com/hot?q=%23%E8%83%A1%E6%AD%8C%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot
+热门mid	['4512448222659241', '4512719158045206', '4512870274803365', '4512248708356659', '4511855463593486', '4512363569015971', '4511984692918851', '4511736704863736', '4511882864953188', '4511808851859450', '4512563243539722', '4512103103700973', '4512143229417375', '4511633751497332', '4510357634575465']
+开始一个post的评论 yes!!!
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512448222659241&from=singleWeiBo&__rnd=1591441031065
+90	:致敬！有爱的日子，有爱的一群人，感谢！
+85	:和 一起守护G7公路 守护人类共同的家园
+83	:今天是世界环境日让我们与 一起致敬绿色家园的守护者！
+68	:致敬家园守护者点赞公益达人胡歌
+52	:歌
+51	:优质偶像
+42	:跟着 守护G7
+23	:
+43	:“对于公益和环保 我的认知是勿以善小而不为  我们不要等到去做一件特别伟大的事时才铆足了劲   日常生活中要积少成多”  —胡歌 。今天和歌一起致敬默默无闻的沙漠护林者，用爱守护G7公路
+36	:让我们和 一起守护人类共同的家园
+29	:所有的伟大，源于一个勇敢的开始，让我们和 一起守护人类共同的家园吧！  [米奇比心][米奇比心]
+28	:致敬
+25	:为所有公益人点赞 让我们和 一起守护人类共同的家园
+23	:向所有坚守在公益事业上的志愿者致敬
+24	:点赞胡歌 加油
+请求达到用户设定的上限 结束请求
+15
+{'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9', 'Accept-Encoding': 'gzip, deflate, br', 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive', 'Cookie': '_ga=GA1.2.956605479.1589971437; SCF=Aj1E_ydepWREVVJcOqZjRJziaqxHCYKn-Gv-RkCpdD3-yK0QtP9MXnGzRKqOklSAvFoDHGPZRikkC-e2p5i6hbM.; SINAGLOBAL=1876006436140.0298.1580887962558; SUB=_2AkMpmYbcdcPxrAZZkf8TymrmaYhH-jyaTO8qAn7uJhMyAxhu7nQ0qSVutBF-XFs9GyfhVYaW0Vs_ukVHTLppXU7j; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; SUHB=0C1ydjo7snj-l2; UOR=,,www.baidu.com; login_sid_t=baa7692170c8e9d1ac377d5af586fc47; cross_origin_proto=SSL; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; _s_tentry=-; Apache=8320276427423.147.1591405686498; ULV=1591405686518:20:6:6:8320276427423.147.1591405686498:1591365844522', 'Host': 'weibo.com', 'Pragma': 'no-cache', 'Sec-Fetch-Dest': 'document', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Site': 'none', 'Sec-Fetch-User': '?1', 'Upgrade-Insecure-Requests': '1', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36'}
+搜索请求为:胡歌
+https://s.weibo.com/hot?q=%23%E8%83%A1%E6%AD%8C%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot
+热门mid	['4512448222659241', '4512719158045206', '4512870274803365', '4512248708356659', '4511855463593486', '4512363569015971', '4511984692918851', '4511736704863736', '4511882864953188', '4511808851859450', '4512563243539722', '4512103103700973', '4512143229417375', '4511633751497332', '4510357634575465']
+开始一个post的评论 yes!!!
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512448222659241&from=singleWeiBo&__rnd=1591441069544
+90	:致敬！有爱的日子，有爱的一群人，感谢！
+85	:和 一起守护G7公路 守护人类共同的家园
+83	:今天是世界环境日让我们与 一起致敬绿色家园的守护者！
+68	:致敬家园守护者点赞公益达人胡歌
+52	:歌
+51	:优质偶像
+42	:跟着 守护G7
+23	:
+43	:“对于公益和环保 我的认知是勿以善小而不为  我们不要等到去做一件特别伟大的事时才铆足了劲   日常生活中要积少成多”  —胡歌 。今天和歌一起致敬默默无闻的沙漠护林者，用爱守护G7公路
+36	:让我们和 一起守护人类共同的家园
+29	:所有的伟大，源于一个勇敢的开始，让我们和 一起守护人类共同的家园吧！  [米奇比心][米奇比心]
+28	:致敬
+25	:为所有公益人点赞 让我们和 一起守护人类共同的家园
+23	:向所有坚守在公益事业上的志愿者致敬
+24	:点赞胡歌 加油
+请求达到用户设定的上限 结束请求
+15
+{'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9', 'Accept-Encoding': 'gzip, deflate, br', 'Accept-Language': 'zh-CN,zh;q=0.9,en;q=0.8', 'Cache-Control': 'no-cache', 'Connection': 'keep-alive', 'Cookie': '_ga=GA1.2.956605479.1589971437; SCF=Aj1E_ydepWREVVJcOqZjRJziaqxHCYKn-Gv-RkCpdD3-yK0QtP9MXnGzRKqOklSAvFoDHGPZRikkC-e2p5i6hbM.; SINAGLOBAL=1876006436140.0298.1580887962558; SUB=_2AkMpmYbcdcPxrAZZkf8TymrmaYhH-jyaTO8qAn7uJhMyAxhu7nQ0qSVutBF-XFs9GyfhVYaW0Vs_ukVHTLppXU7j; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; SUHB=0C1ydjo7snj-l2; UOR=,,www.baidu.com; login_sid_t=baa7692170c8e9d1ac377d5af586fc47; cross_origin_proto=SSL; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; _s_tentry=-; Apache=8320276427423.147.1591405686498; ULV=1591405686518:20:6:6:8320276427423.147.1591405686498:1591365844522', 'Host': 'weibo.com', 'Pragma': 'no-cache', 'Sec-Fetch-Dest': 'document', 'Sec-Fetch-Mode': 'navigate', 'Sec-Fetch-Site': 'none', 'Sec-Fetch-User': '?1', 'Upgrade-Insecure-Requests': '1', 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36'}
+搜索请求为:胡歌
+https://s.weibo.com/hot?q=%23%E8%83%A1%E6%AD%8C%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot
+热门mid	['4512448222659241', '4512719158045206', '4512870274803365', '4512248708356659', '4511855463593486', '4512363569015971', '4511984692918851', '4511736704863736', '4511882864953188', '4511808851859450', '4512563243539722', '4512103103700973', '4512143229417375', '4511633751497332', '4510357634575465']
+开始一个post的评论 yes!!!
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512448222659241&from=singleWeiBo&__rnd=1591441369078
+90	:致敬！有爱的日子，有爱的一群人，感谢！
+85	:和 一起守护G7公路 守护人类共同的家园
+83	:今天是世界环境日让我们与 一起致敬绿色家园的守护者！
+68	:致敬家园守护者点赞公益达人胡歌
+52	:歌
+51	:优质偶像
+42	:跟着 守护G7
+23	:
+43	:“对于公益和环保 我的认知是勿以善小而不为  我们不要等到去做一件特别伟大的事时才铆足了劲   日常生活中要积少成多”  —胡歌 。今天和歌一起致敬默默无闻的沙漠护林者，用爱守护G7公路
+36	:让我们和 一起守护人类共同的家园
+29	:所有的伟大，源于一个勇敢的开始，让我们和 一起守护人类共同的家园吧！  [米奇比心][米奇比心]
+28	:致敬
+25	:为所有公益人点赞 让我们和 一起守护人类共同的家园
+23	:向所有坚守在公益事业上的志愿者致敬
+24	:点赞胡歌 加油
+请求达到用户设定的上限 结束请求
+15

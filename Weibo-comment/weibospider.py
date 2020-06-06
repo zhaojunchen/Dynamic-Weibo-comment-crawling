@@ -1,3 +1,4 @@
+import sys
 import random
 import bs4
 import requests
@@ -6,8 +7,12 @@ from bs4 import BeautifulSoup
 import time
 from urllib import parse
 
+# 将文件赋值给系统的标准化输出
+
+
 result_comments = []
 headers = {}
+
 headers_str = """
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
 Accept-Encoding: gzip, deflate, br
@@ -130,11 +135,12 @@ def get_hot_by_search(url):
 
 
 # 获取开始请求
-def get_hot_mid_by_search(search: str):
-    search = parse.quote(search)
-    search = "https://s.weibo.com/hot?q=%23{0}%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot".format(search)
-    print(search)
-    response = requests.get(search)
+def get_hot_mid_by_search(search_param: str):
+    search_param = parse.quote(search_param)
+    search_param = "https://s.weibo.com/hot?q=%23{0}%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot".format(
+        search_param)
+    print(search_param)
+    response = requests.get(search_param)
     html = response.content.decode("utf-8")
     html = BeautifulSoup(html, "lxml")
     cards = html.find_all("div", attrs={"class": "card-wrap"})
@@ -153,8 +159,10 @@ def get_hot_mid_by_search(search: str):
 
 
 # 起始url 延伸获取所有评论
-def hot_ajax(url):
+def hot_ajax(url, max_items=1000):
     while url:
+        if len(result_comments) > max_items:
+            return
         time.sleep(random.randint(1, 3))
         if url:
             print(url)
@@ -167,34 +175,44 @@ git readme: https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/blob/m
 """
 
 
-def start():
+# hide_output True 隐藏输出信息
+def start(search_param: str, max_items=1000, hide_output=True):
+    if hide_output:
+        logfile = open('weibospider.log', 'a+', encoding="utf-8")
+        __console__ = sys.stdout
+        sys.stdout = logfile
+
     global result_comments
     result_comments = []
     global headers
-    headers = {}
-
-    print(guide)
-    update = input("更新cookie? Y or N")
-    if update == "y" or update == "Y":
-        global headers_str
-        headers_str = input("cookie input:")
     headers = init_headers(headers_str)
     # 测试请求头
     print(headers)
-    search = input("请输入微博查询关键字：")
-    search = search.strip()
-    print("搜索请求为:" + search)
+    search_param = search_param.strip()
+    print("搜索请求为:" + search_param)
     # 获取每一个post的初始评论请求
-    starts_ajax = get_hot_mid_by_search(search)
+    starts_ajax = get_hot_mid_by_search(search_param)
     for each in starts_ajax:
+        if len(result_comments) > max_items:
+            print("请求达到用户设定的上限 结束请求")
+            break
         print("开始一个post的评论 yes!!!")
         # 请求完整的一级评论
-        hot_ajax(each)
+        hot_ajax(each, max_items)
     print(len(result_comments))
-    with open("./" + search + ".txt", "w", encoding="utf-8") as f:
+    with open("./" + search_param + ".txt", "w", encoding="utf-8") as f:
         f.write('\n'.join(result_comments))
+    if hide_output:
+        sys.stdout = __console__
+    print("爬虫工作完毕!!!")
     return result_comments
 
 
 if __name__ == '__main__':
-    start()
+    print(guide)
+    update = input("更新cookie? Y or N:")
+    if update == "y" or update == "Y":
+        headers_str = input("cookie input:")
+    search = input("输入关键热词:")
+    search = "胡歌"
+    start(search, 30)

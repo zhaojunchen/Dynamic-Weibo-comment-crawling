@@ -3,6 +3,7 @@
     <words>
       <w>lxml</w>
       <w>weibo</w>
+      <w>weibospider</w>
     </words>
   </dictionary>
 </component>

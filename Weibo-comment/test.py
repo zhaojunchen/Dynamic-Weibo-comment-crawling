@@ -1,4 +1,4 @@
 import weibospider
 
-li = weibospider.start()
+li = weibospider.start("胡歌", 10)
 print(len(li))
