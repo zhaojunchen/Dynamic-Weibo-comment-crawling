@@ -7,6 +7,7 @@ import time
 from urllib import parse
 
 result = []
+like = []
 headers = {}
 headers_str = """
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
@@ -50,7 +51,8 @@ def __rnd():
 
 # ajax请求
 def get_url(url: str):
-    comment_content = []
+    global result
+    global like
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
         print(response)
@@ -67,20 +69,20 @@ def get_url(url: str):
         print(e, end=" ")
         print("response error")
         return None
-
+    # 解析响应内容
     if response:
         soup = BeautifulSoup(response.get('data').get('html'), "lxml")
+        # 解析评论内容
         comments = soup.find_all("div", attrs={"class": "WB_text"})
+        # 评论字符串
         for comment in comments:
             s = "".join([t for t in comment.contents if type(t) == bs4.element.NavigableString])
             s = s.strip().replace("\n", "").lstrip("：").replace("等人", "").strip()
             if s:
                 print(s)
-                comment_content.append(s)
+                result.append(s)
             # https://www.zhihu.com/question/56861741
 
-        global result
-        result += comment_content
         action_data = soup.find("a", attrs={"action-type": "click_more_comment"})
         if not action_data:
             action_data = soup.find("div", attrs={"node-type": "comment_loading"})
