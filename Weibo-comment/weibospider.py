@@ -212,7 +212,9 @@ if __name__ == '__main__':
     print(guide)
     update = input("更新cookie? Y or N:")
     if update == "y" or update == "Y":
-        headers_str = input("cookie input:")
+        print("cookie input( ctrl+D to end):")
+        headers_list = sys.stdin.readlines()
+        headers_str = "".join(headers_list).strip()
     search = input("输入关键热词:")
     search = "胡歌"
     start(search, 30)
