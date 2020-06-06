@@ -1,14 +1,27 @@
 # 微博热门评论爬取
 
-## 编程目标
+## 爬虫目标
 
-实现给定关键词，爬取搜索页面 `https://s.weibo.com/weibo?q={keword}&` 所有标记有"热门" post的所有一级评论，并保存于txt，用于情感分析材料。
+给定关键词keyword，爬取搜索页面 `https://s.weibo.com/hot?q=%23{keyword}%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot` 页面（只爬取第一页）的所有一级评论及其点赞数目，并保存于txt，用于情感分析材料。
+
+其中
+
+- 评论内容是我们情感分析的一个基础！
+- 评论点赞数是此评论的情感权重衡量！
 
 
 
-例如:  搜索目标关键字 **刘亦菲**  即是访问网页 `https://s.weibo.com/weibo?q=刘亦菲&` 所有带有热门关键词的微博评论
+例如:  目标关键字 **刘亦菲**  即是访问网页 `https://s.weibo.com/hot?q=%23刘亦菲%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot` 页面的第一页的所有一级评论！
 
-## 技术应用
+![image-20200606122336317](README.assets/image-20200606122336317.png)
+
+返回结果为如下文件形式的列表：（评论列表供情感分析模块使用）
+
+![image-20200606122521882](README.assets/image-20200606122521882.png)
+
+
+
+## 基础技术
 
 ### AJAX
 
@@ -18,54 +31,51 @@
 
 常见的表现形式有：
 
-- 网页列表下拉自动刷新新内容
-- 点击*加载更多* 刷新新内容
+- 网页列表下拉自动刷新内容
+- 点击*加载更多* 刷新内容
 
-上面两种形式在浏览器状态栏上的请求URL都不会变化！
+上面两种形式的内容刷新，浏览器状态栏上的请求URL都不会变化！
 
 **原理如下：**
 
 > *那些刷新的新数据是通过AJAX加载而来的，是一种异步加载方式，原始的页面最初不会包含某些数据，原始页面加载完后，会再向服务器请求某个接口获取数据，然后数据才被处理从而呈现到网页上，这其实就是发送了一个Ajax请求。按照Web发展的趋势来看，这种形式的页面越来越多。网页的原始HTML文档不会包含任何数据，数据都是通过Ajax统一加载后再呈现出来的，这样在Web开发上可以做到前后端分离，而且降低服务器直接渲染页面带来的压力。*
->
 
 
 
-如何观察一个网页的AJAX请求：（chrome为例）**
+**如何观察一个网页的AJAX请求：（chrome为例）**
 
 ![image-20200520181021702](README.assets/image-20200520181021702.png)
 
-刷新页面观察 AJAX请求头、响应头、相应内容等
+刷新页面观察 AJAX请求头、响应头、响应内容等
 
 
 
 **如何调试一个网页的AJAX请求：（chrome为例）**
 
-以往的静态页面爬虫，为构造出爬虫的url请求、我们需要分析网页的url规律和参数变化。例如爬取小说目录，我们需要分析每一页的章节数目和变化规律，确保目录的准确性！
+以往的静态页面爬虫，为构造出爬虫的url请求、我们需要分析网页的url规律和参数变化。例如爬取小说目录，我们需要分析每一页的章节数目和页码变化规律，确保爬取到的目录的准确性。
 
-而在AJAX里面我们需要分析AJAX请求头的url的规律，一次作为突破口，制作一个持续的爬虫。常常我们需要url
-
-的构造方法，和静态页面不同的是，AJAX的请求url通常非常长和复杂，对比分析出每个参数意义是非常重要的。这里我们可以下载网页的所有资源，让后通过IDE来搜索调试，查看请求URL的构造和数据的变化！
+而在AJAX里面我们需要分析AJAX请求头的url的规律，以此作为突破口，制作一个持续的爬虫。同样的我们需要分析url的构造方法。和静态页面不同的是，AJAX的请求url通常非常长、复杂，通过对比方式对比分析出每个参数意义是非常重要的。这里我们可以下载网页的所有资源，然后通过IDE来搜索关键字符换、调试JS，以此查看请求URL的构造和数据的变化！
 
 这里下载插件:chrome 插件 Resources Saver  和 JavaScript IDE webstorrm
 
 ![image-20200520181847200](README.assets/image-20200520181847200.png)
 
-下载所有资源，并用IDE打开，搜索url涉及的关键字等，可以得到意想不到的收获。（以上全部来自自己的无数次的摸索）
+下载所有资源（包括XHR），并用IDE打开，搜索url涉及的关键字等，可以得到意想不到的收获。（以上全部来自自己的无数次的摸索）
 
 
 
-参考文章（非常经典） ： https://blog.csdn.net/weixin_42555080/article/details/88318010 
+参考文章（非常经典） ：[AJAX数据爬取基本认识及原理](https://blog.csdn.net/weixin_42555080/article/details/88318010 ) 
 
 
 
 ### BeautifulSoup
 
-BeautifulSoup用于解析网页爬虫的返回结果，这里不多叙述（课程上有讲）
+BeautifulSoup用于解析网页爬虫的返回结果，这里不多叙述。
 
 标记一下很重要的点：
 
 ```
-1. find寻找标签失败，返回None  若要get其属性，需要判断 非None 否则抛出错误
+1. find寻找标签失败，返回None  若要get其属性，需要判断非None 否则抛出错误
 
 2. 获取标签文本，但是不获取其子标签的文本  get_text()  默认是递归方式获取标签文本
 解决方法: comment目标标签  其包含若干个带有文本的子标签   s为comment标签的文本
@@ -74,17 +84,17 @@ s = "".join([t for t in comment.contents if type(t) == bs4.element.NavigableStri
 
 ### selenium
 
-**参考文档** [ https://github.com/easonhan007/webdriver_guide/blob/master/README.md](https://github.com/easonhan007/webdriver_guide/blob/master/README.md)
+**参考文档** [ selenium参考教程](https://github.com/easonhan007/webdriver_guide/blob/master/README.md)
 
 **注 本文以AJAX请求爬取为主**
 
-除却分析AJAX请求，构造出通用的url外，selenium自动化也是很好的爬取方法动态网页方法
+除却分析AJAX请求，构造出通用的url外，selenium自动化也是很好的爬取动态网页的方法。
 
-下面是一份 输入评论页面url，输出为：
+下面是一份 输入评论展示页面url，输出为：
 
 1. 打开浏览器
 2. 不断点击评论页面 加载更多 
-3. 爬取（未实现 很简单 网页元素加载完毕就可以点击，缺点是有点慢）
+3. 爬取（未实现 很简单 网页元素加载完毕就可以点击，缺点是较慢、当页面很大时只能一次性解析所有的内容! 优点是简单、稳定）
 
 
 
@@ -92,15 +102,14 @@ s = "".join([t for t in comment.contents if type(t) == bs4.element.NavigableStri
 # 教程概览 https://blog.csdn.net/huangbaokang/article/details/83503677
 # 教程文档 https://github.com/easonhan007/webdriver_guide/blob/master/README.md
 # 元素定位和点击事件 https://github.com/easonhan007/webdriver_guide/blob/master/08/simple_locate.py.md
-# 打开浏览器
+# 打开浏览器 针对chrome
 
 from selenium import webdriver
 import time
 
 from selenium.common.exceptions import NoSuchElementException
 
-
-# 实现页面自动下移
+# 实现页面自动下移  
 def scroll(driver):
     # 获取当前页面滚动条纵坐标的位置
     driver.execute_script(""" 
@@ -122,7 +131,6 @@ def scroll(driver):
         })(); 
         """)
 
-
 # 打开浏览器
 dr = webdriver.Chrome()
 # 最大化浏览器
@@ -142,19 +150,6 @@ while True:
         print("No such element")
     time.sleep(2)
 
-# 退出
-# close方法关闭当前的浏览器窗口，
-# quit方法不仅关闭窗口，还会彻底的退出 webdriver，
-# 释放与driver server之间的连接。
-# 所以简单来说quit是更加彻底的 close，
-# quit会更好的释放资源，适合强迫症和完美主义者
-
-
-# dr.quit()
-
-
-# (<class 'selenium.common.exceptions.NoSuchElementException'>, NoSuchElementException('no such element: Unable to locate element: {"method":"link text","selector":"查看更多"}\n  (Session info: chrome=81.0.4044.138)', None, None), <traceback object at 0x00000201C73E5348>)
-
 ```
 
 
@@ -163,7 +158,7 @@ while True:
 
 ### 评论分析
 
-**首先打开一个post的评论页面，页面如下，包含很多的以及评论**
+**首先打开一个post的评论页面，页面如下，包含很多的一级评论，每条评论下面都有点赞**
 
 <img src="README.assets/image-20200520183420361.png" alt="image-20200520183420361" style="zoom:50%;" />
 
@@ -179,41 +174,51 @@ while True:
 
 ![image-20200520184750675](README.assets/image-20200520184750675.png)
 
-我们复制url请求、分析规律：
+任意请求一个评论页面（和前面的不一样） 复制url请求、分析规律：（**可以在notepad++ 使用compare插件分析**）
 
 ```
-https://www.weibo.com/aj/v6/comment/big?ajwvr=6&id=4506646204620976&from=singleWeiBo&__rnd=1589971809202
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512539888841055&from=singleWeiBo&__rnd=1591419482709
 
 
-https://www.weibo.com/aj/v6/comment/big?ajwvr=6&id=4506646204620976&root_comment_max_id=139255979119461&root_comment_max_id_type=0&root_comment_ext_param=&page=5&filter=hot&sum_comment_number=62&filter_tips_before=0&from=singleWeiBo&__rnd=1589971825396
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512539888841055&root_comment_max_id=13885763023819383&root_comment_max_id_type=0&root_comment_ext_param=&page=2&filter=hot&sum_comment_number=46&filter_tips_before=0&from=singleWeiBo&__rnd=1591419501239
 
-https://www.weibo.com/aj/v6/comment/big?ajwvr=6&id=4506646204620976&root_comment_max_id=139255979119461&root_comment_max_id_type=0&root_comment_ext_param=&page=5&filter=hot&sum_comment_number=62&filter_tips_before=0&from=singleWeiBo&__rnd=1589971825396
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512539888841055&root_comment_max_id=140218408395095&root_comment_max_id_type=0&root_comment_ext_param=&page=3&filter=hot&sum_comment_number=79&filter_tips_before=0&from=singleWeiBo&__rnd=1591419502139
 
-https://www.weibo.com/aj/v6/comment/big?ajwvr=6&id=4506646204620976&root_comment_max_id=139255979119461&root_comment_max_id_type=0&root_comment_ext_param=&page=5&filter=hot&sum_comment_number=62&filter_tips_before=0&from=singleWeiBo&__rnd=1589971825396
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512539888841055&root_comment_max_id=138844029830047&root_comment_max_id_type=0&root_comment_ext_param=&page=4&filter=hot&sum_comment_number=95&filter_tips_before=0&from=singleWeiBo&__rnd=1591419581257
 
-https://www.weibo.com/aj/v6/comment/big?ajwvr=6&id=4506646204620976&root_comment_max_id=139255979119461&root_comment_max_id_type=0&root_comment_ext_param=&page=5&filter=hot&sum_comment_number=62&filter_tips_before=0&from=singleWeiBo&__rnd=1589971825396
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512539888841055&root_comment_max_id=138844017932105&root_comment_max_id_type=0&root_comment_ext_param=&page=5&filter=hot&sum_comment_number=110&filter_tips_before=0&from=singleWeiBo&__rnd=1591419595176
 ```
 
+![image-20200606130104454](README.assets/image-20200606130104454.png)
+
+![image-20200606130042273](README.assets/image-20200606130042273.png)
 
 
 
+**除去第一条外：其余的url格式是一样的！**
 
-除去第一条外：其余的url格式是一样的！
-
-总结出非首条URL的规律如下: **关注action_data 和 rnd 字段**
+通过上面的对比、总结出非首条URL的规律如下: 
 
 ```
 dict = {"action_data": action_data, "rnd": __rnd()}
 url = "https://weibo.com/aj/v6/comment/big?ajwvr=6&{action_data}&from=singleWeiBo&__rnd={rnd}".format(**dict)
 ```
 
+**关注action_data 和 rnd 字段**
+
 **action_data** 分析
 
-action_data是很多参数的集合：顾名思义这个是请求action使得参数，一般在请求下一页的a标签可以获取！查看源码：action_data和请求的url完全对应
+action_data是很多参数的集合：顾名思义这个是请求动作的参数，一般在当前页面请求下一页这个a标签可以获取！查看网页源码：查看更多标签
 
-![image-20200520185538824](README.assets/image-20200520185538824.png)
+![image-20200606130235944](README.assets/image-20200606130235944.png)
 
-思考一个问题：action_data从哪里来，显然他是从AJAX请求里面获取的数据：
+点击这个按钮、查看新的AJAX url: action_data和请求的url的action_data部分完全对应！
+
+```
+https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4512539888841055&root_comment_max_id=138706578320298&root_comment_max_id_type=0&root_comment_ext_param=&page=6&filter=hot&sum_comment_number=125&filter_tips_before=0&from=singleWeiBo&__rnd=1591419796024
+```
+
+思考一个问题：action_data所在的a标签肯定会通过AJAX请求更新！那么如何通过返回的AJAX请求来提取出这个action_data呢？
 
 查看一个典型的 AJAX结构：json数据的data.html 就是新加入的页面的网页元素！
 
@@ -256,13 +261,13 @@ rnd没有任何的资料，直接查看chrome源码很难受（通过AJAX调试�
 
 **id分析**
 
-从这个评论页面是看不出来id是这么来的，他是通过搜搜页面点击 **评论**而来的，记住和id，回到上一页面，搜索这个id！
+从这个评论页面是看不出来id是这么来的，他是通过搜搜页面的某一个post、然后点击 **评论** 而来的，记住这个id，回到上一页面，搜索这个id！
 
 ![image-20200520191646204](README.assets/image-20200520191646204.png)
 
 
 
-容易发现：所谓的AJAX 请求的id实际上就是这个mid，并且一个`div class="card-wrap"` 就是一个post！
+容易发现：所谓的AJAX 请求的id实际上就是这个mid，并且一个`div class="card-wrap"` 就是一个完整的post！
 
 所有我们就可以根据 单纯的一个mid爬取所有的mid对应的post的所有一级评论！
 
@@ -270,91 +275,30 @@ rnd没有任何的资料，直接查看chrome源码很难受（通过AJAX调试�
 
 
 
-故而输出一个mid，爬取对饮post的所有一级评论：
+故而：通过一个mid，我们可以爬取对应的所有一级评论
 
-代码如下：
+**爬取请求关键字的mid编号** 
 
-```
-# ajax请求
-def get_url(url: str, f=None, headers=headers):
-    c = []
-    response = requests.get(url, headers=headers)
-    if response.status_code != 200:
-        print("Ajax Response Error")
-        return None
-    response = json.loads(response.text)
-    if response:
-        soup = BeautifulSoup(response.get('data').get('html'), "lxml")
-        print(soup)
-        comments = soup.find_all("div", attrs={"class": "WB_text"})
-        for comment in comments:
-            s = "".join([t for t in comment.contents if type(t) == bs4.element.NavigableString])
-            s = s.strip().replace("\n", "").lstrip("：").replace("等人", "")
-            if s:
-                print(s)
-                c.append(s + "\n")
-            # https://www.zhihu.com/question/56861741
-        if f:
-            f.writelines(c)
-        global result
-        with lock:
-            result += c
-        action_data = soup.find("a", attrs={"action-type": "click_more_comment"})
-        if not action_data:
-            action_data = soup.find("div", attrs={"node-type": "comment_loading"})
-            if not action_data:
-                return None
-        action_data = action_data.get("action-data").strip().replace("amp;", "")
-        # print("action_data is " + action_data)
-        dict = {"action_data": action_data, "rnd": __rnd()}
-        if action_data:
-            url = "https://weibo.com/aj/v6/comment/big?ajwvr=6&{action_data}&from=singleWeiBo&__rnd={rnd}".format(
-                **dict)
-        else:
-            url = None
-    return url
+简单的爬取下初始化请求页面页面即可：
 
+` cards = html.find_all("div", attrs={"class": "card-wrap"})`
 
-# 循环请求：
-// url 为初始的第一条url  余下的自动更新url
-def hot_ajax(url):
-    while url:
-        time.sleep(1)
-        url = get_url(url)
-
-
-```
-
-
-
-**热门评论mid**
-
-```
-# 热门话题的url mid解析
-def get_hot_by_search(url):
-    response = requests.get(url)
+```python
+# 获取开始请求
+def get_hot_mid_by_search(search: str):
+    search = parse.quote(search)
+    search = "https://s.weibo.com/hot?q=%23{0}%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot".format(search)
+    print(search)
+    response = requests.get(search)
     html = response.content.decode("utf-8")
-    print(html)
     html = BeautifulSoup(html, "lxml")
     cards = html.find_all("div", attrs={"class": "card-wrap"})
     hot_mids = []
     for card in cards:
-        titles = card.find_all("a")
-        for title in titles:
-            if title:
-                if "热门" == title.text:
-                    print(title.text)
-                    hot_mids.append(card.get("mid"))
-                    break
-    print(hot_mids)
-    return hot_mids
-    
-# 获取开始请求 search为关键词
-def get_hot_mid_by_search(search: str):
-    search = parse.quote(search)
-    search = "https://s.weibo.com/weibo?q={0}&".format(search)
-    print(search)
-    hot_mids = get_hot_by_search(search)
+        mid = card.get("mid")
+        if mid:
+            hot_mids.append(mid)
+    print("热门mid", end="\t")
     print(hot_mids)
     hot_ajax_start = []
     for mid in hot_mids:
@@ -364,6 +308,38 @@ def get_hot_mid_by_search(search: str):
 ```
 
 
+
+**爬取评论页面的赞数和评论内容**
+
+关键点：
+
+1. 只是爬取一级评论、过滤其他
+2. 注意判断bs4元素的None、避空指针调用
+3. 正确匹配点赞和评论的一一对应关系、防止后期情感分析出现权重错误
+
+
+
+还是有点折腾的地方:复制html到notepad++ 分析结构
+
+
+
+**一级评论：每一个root_comment就是一个完整的一级评论**
+
+![image-20200606132313359](README.assets/image-20200606132313359.png)
+
+如下：
+
+![image-20200606132419263](README.assets/image-20200606132419263.png)
+
+一个很麻烦的是：`root_comment`可能包含二级评论及其点赞、如上所示！
+
+**定位评论和点赞**
+
+![image-20200606132630783](README.assets/image-20200606132630783.png)
+
+![image-20200606132703331](README.assets/image-20200606132703331.png)
+
+实际上一个root_comment只有一个一级评论和一个一级评论的赞。但是由于部分二级评论嵌套在一级里面，一个root_comment
 
 ### 关于cookie
 
@@ -379,7 +355,7 @@ def get_hot_mid_by_search(search: str):
 
 2. AJAX信息爬取可以不登录，但是一定需要headers和cookie
 
-   为了简化爬取，最好使用不登录的AJAX cookie去爬取（防止用例过猛封号），这里我使用IE去请求ajax的开始url：例如
+   为了简化爬取，最好使用不登录的AJAX cookie去爬取（防止用力过猛封号），这里我使用chrome去请求ajax的开始url：例如
 
    ```
    https://weibo.com/aj/v6/comment/big?ajwvr=6&id=4506646188218361&from=singleWeiBo&__rnd=1589974845914
@@ -399,28 +375,17 @@ def get_hot_mid_by_search(search: str):
 
 ​	
 
-**构造正确的标头：例如程序使用的header：基于IE的不登陆cookie**
+**构造正确的标头：例如程序使用的header：基于chrome的不登陆cookie**
 
-```
-# 修改cookies得到新的请求  在合适的浏览器copy出请求的参数
-headers = {
-    'Accept': 'image/gif, image/jpeg, image/pjpeg, application/x-ms-application, application/xaml+xml, application/x-ms-xbap, */*',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'zh-Hans-CN, zh-Hans; q=0.5',
-    'Connection': 'Keep-Alive',
-    'Cookie': 'SUB=_2AkMpmGNfdcPxrAZZkf8TymrmaYhH-jyaTQqpAn7uJhMyAxh77lUCqSVutBF-XEcZoLdAAUhhdFH_OTIESN5YwCgm; _s_tentry=-; Apache=8383124929170.817.1589954045328; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; Ugrow-G0=140ad66ad7317901fc818d7fd7743564; TC-Page-G0=62b98c0fc3e291bc0c7511933c1b13ad|1589963875|1589963875; UOR=,,login.sina.com.cn; SINAGLOBAL=7390078349060.063.1589116949157; webim_unReadCount=%7B%22time%22%3A1589963878449%2C%22dm_pub_total%22%3A0%2C%22chat_group_client%22%3A0%2C%22chat_group_notice%22%3A0%2C%22allcountNum%22%3A39%2C%22msgbox%22%3A0%7D; ULV=1589954045516:5:5:3:8383124929170.817.1589954045328:1589727942460; SUHB=0nleBnbCAt0qZa; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; wb_view_log_5897661455=1280*8002; login_sid_t=cf5e8bd6bb1862b4dacf3cdf346c4223; cross_origin_proto=SSL; WBStorage=42212210b087ca50|undefined; wb_view_log=1280*8002',
-    'Host': 'weibo.com',
-    'User-Agent': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.30729; .NET CLR 3.5.30729)'
-}
-```
 
-3. 爬取使用单线程、定时sleep，以防止cookie被封！ 下图是我一次用登陆微博账号的cookie爬取数据，爬取的太凶猛了导致chrome无法正确加载！ AJAX无法正常加载
+
+3. 爬取使用单线程、定时sleep，以防止cookie被封！ 下图是我一次用登陆微博账号的cookie爬取数据，爬取的太凶猛了，导致chrome无法正确加载！ AJAX也无法正常请求！
 
    ![image-20200520195041601](README.assets/image-20200520195041601.png)
+   
+   ![image-20200520195330056](README.assets/image-20200520195330056.png)
 
-![image-20200520195330056](README.assets/image-20200520195330056.png)
 
-## 
 
 ## 完整脚本
 
@@ -437,32 +402,50 @@ headers = {
 
 
 ```
-import threading
-
+import random
 import bs4
 import requests
 import json
-import os
 from bs4 import BeautifulSoup
 import time
-import re
 from urllib import parse
 
-lock = threading.Lock()  # 申请一把锁
-result = []
+result_comments = []
+headers = {}
+headers_str = """
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
+Accept-Encoding: gzip, deflate, br
+Accept-Language: zh-CN,zh;q=0.9,en;q=0.8
+Cache-Control: no-cache
+Connection: keep-alive
+Cookie: _ga=GA1.2.956605479.1589971437; SCF=Aj1E_ydepWREVVJcOqZjRJziaqxHCYKn-Gv-RkCpdD3-yK0QtP9MXnGzRKqOklSAvFoDHGPZRikkC-e2p5i6hbM.; SINAGLOBAL=1876006436140.0298.1580887962558; SUB=_2AkMpmYbcdcPxrAZZkf8TymrmaYhH-jyaTO8qAn7uJhMyAxhu7nQ0qSVutBF-XFs9GyfhVYaW0Vs_ukVHTLppXU7j; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; SUHB=0C1ydjo7snj-l2; UOR=,,www.baidu.com; login_sid_t=baa7692170c8e9d1ac377d5af586fc47; cross_origin_proto=SSL; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; _s_tentry=-; Apache=8320276427423.147.1591405686498; ULV=1591405686518:20:6:6:8320276427423.147.1591405686498:1591365844522
+Host: weibo.com
+Pragma: no-cache
+Sec-Fetch-Dest: document
+Sec-Fetch-Mode: navigate
+Sec-Fetch-Site: none
+Sec-Fetch-User: ?1
+Upgrade-Insecure-Requests: 1
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36
+"""
 
-# 修改cookies得到新的请求  在合适的浏览器copy出请求的参数
-headers = {
-    'Accept': 'image/gif, image/jpeg, image/pjpeg, application/x-ms-application, application/xaml+xml, application/x-ms-xbap, */*',
-    'Accept-Encoding': 'gzip, deflate',
-    'Accept-Language': 'zh-Hans-CN, zh-Hans; q=0.5',
-    'Connection': 'Keep-Alive',
-    'Cookie': 'SUB=_2AkMpmGNfdcPxrAZZkf8TymrmaYhH-jyaTQqpAn7uJhMyAxh77lUCqSVutBF-XEcZoLdAAUhhdFH_OTIESN5YwCgm; _s_tentry=-; Apache=8383124929170.817.1589954045328; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; Ugrow-G0=140ad66ad7317901fc818d7fd7743564; TC-Page-G0=62b98c0fc3e291bc0c7511933c1b13ad|1589963875|1589963875; UOR=,,login.sina.com.cn; SINAGLOBAL=7390078349060.063.1589116949157; webim_unReadCount=%7B%22time%22%3A1589963878449%2C%22dm_pub_total%22%3A0%2C%22chat_group_client%22%3A0%2C%22chat_group_notice%22%3A0%2C%22allcountNum%22%3A39%2C%22msgbox%22%3A0%7D; ULV=1589954045516:5:5:3:8383124929170.817.1589954045328:1589727942460; SUHB=0nleBnbCAt0qZa; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; wb_view_log_5897661455=1280*8002; login_sid_t=cf5e8bd6bb1862b4dacf3cdf346c4223; cross_origin_proto=SSL; WBStorage=42212210b087ca50|undefined; wb_view_log=1280*8002',
-    'Host': 'weibo.com',
-    'User-Agent': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 10.0; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; .NET CLR 2.0.50727; .NET CLR 3.0.30729; .NET CLR 3.5.30729)'
-}
+
+def init_headers(headers_string: str):
+    headers_local = {}
+    headers_string.strip()
+    lines = headers_string.split('\n')
+    for line in lines:
+        if not line:
+            continue
+        line = line.strip()
+        pos = line.index(":", 1)
+        key = line[0:pos].strip()
+        value = line[pos + 1:].strip()
+        headers_local[key] = value
+    return headers_local
 
 
+# weibo format rnd timestamp
 def __rnd():
     t = time.time()
     t = "{:.3f}".format(t).replace(".", "")
@@ -470,29 +453,51 @@ def __rnd():
 
 
 # ajax请求
-def get_url(url: str, f=None, headers=headers):
-    c = []
+def get_url(url: str):
+    global result_comments
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
+        print(response)
         print("Ajax Response Error\n 尝试访问在IE更换Cookie")
         print("参考教程Cookie部分  https://github.com/zhaojunchen/Dynamic-Weibo-comment-crawling/tree/master/Weibo-comment")
         return None
-    response = json.loads(response.text)
+    # print(response.status_code)
+    if response.text == "":
+        print("response is null")
+        return None
+    try:
+        response = json.loads(response.text)
+    except Exception as e:
+        print(e, end=" ")
+        print("response error")
+        return None
+    # 解析响应内容
     if response:
         soup = BeautifulSoup(response.get('data').get('html'), "lxml")
-        comments = soup.find_all("div", attrs={"class": "WB_text"})
-        for comment in comments:
+        # 解析评论内容
+        root_comments = soup.find_all("div", attrs={"node-type": "root_comment"})
+        if not root_comments:
+            return None
+        for root_comment in root_comments:
+            like = root_comment.find("a", attrs={"class": "S_txt1", "action-type": "fl_like", "title": "赞"})
+            like = like.find_all("em")[-1].text.strip()
+            if like.isdigit():
+                pass
+            elif like == "赞":
+                like = "0"
+            else:
+                exit(-1)
+            # 只是捕获一级评论 过滤二级评论
+            comment = root_comment.find("div", attrs={"class": "WB_text"})
+            # 评论字符串
             s = "".join([t for t in comment.contents if type(t) == bs4.element.NavigableString])
-            s = s.strip().replace("\n", "").lstrip("：").replace("等人", "")
-            if s:
-                print(s)
-                c.append(s + "\n")
+            s = s.strip().replace("\n", "").lstrip("：").replace("等人", "").replace("回复:", "").strip()
+            target = like + "\t:" + s
+            print(target)
+            result_comments.append(target)
+
             # https://www.zhihu.com/question/56861741
-        if f:
-            f.writelines(c)
-        global result
-        with lock:
-            result += c
+
         action_data = soup.find("a", attrs={"action-type": "click_more_comment"})
         if not action_data:
             action_data = soup.find("div", attrs={"node-type": "comment_loading"})
@@ -513,7 +518,6 @@ def get_url(url: str, f=None, headers=headers):
 def get_hot_by_search(url):
     response = requests.get(url)
     html = response.content.decode("utf-8")
-    print(html)
     html = BeautifulSoup(html, "lxml")
     cards = html.find_all("div", attrs={"class": "card-wrap"})
     hot_mids = []
@@ -532,9 +536,18 @@ def get_hot_by_search(url):
 # 获取开始请求
 def get_hot_mid_by_search(search: str):
     search = parse.quote(search)
-    search = "https://s.weibo.com/weibo?q={0}&".format(search)
+    search = "https://s.weibo.com/hot?q=%23{0}%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot".format(search)
     print(search)
-    hot_mids = get_hot_by_search(search)
+    response = requests.get(search)
+    html = response.content.decode("utf-8")
+    html = BeautifulSoup(html, "lxml")
+    cards = html.find_all("div", attrs={"class": "card-wrap"})
+    hot_mids = []
+    for card in cards:
+        mid = card.get("mid")
+        if mid:
+            hot_mids.append(mid)
+    print("热门mid", end="\t")
     print(hot_mids)
     hot_ajax_start = []
     for mid in hot_mids:
@@ -543,28 +556,38 @@ def get_hot_mid_by_search(search: str):
     return hot_ajax_start
 
 
+# 起始url 延伸获取所有评论
 def hot_ajax(url):
     while url:
-        time.sleep(1)
+        time.sleep(random.randint(1, 3))
+        if url:
+            print(url)
         url = get_url(url)
 
 
-if __name__ == '__main__':
-    cookie = "_s_tentry=-; Apache=8383124929170.817.1589954045328; TC-V5-G0=4de7df00d4dc12eb0897c97413797808; Ugrow-G0=140ad66ad7317901fc818d7fd7743564; TC-Page-G0=62b98c0fc3e291bc0c7511933c1b13ad|1589963875|1589963875; UOR=,,login.sina.com.cn; SINAGLOBAL=7390078349060.063.1589116949157; webim_unReadCount=%7B%22time%22%3A1589963878449%2C%22dm_pub_total%22%3A0%2C%22chat_group_client%22%3A0%2C%22chat_group_notice%22%3A0%2C%22allcountNum%22%3A39%2C%22msgbox%22%3A0%7D; ULV=1589954045516:5:5:3:8383124929170.817.1589954045328:1589727942460; SUHB=0nleBnbCAt0qZa; SUBP=0033WrSXqPxfM72wWs9jqgMF55529P9D9WFM0ZAQ0We2E62STc0UE.Bl5JpV8GD3q0.RSonpeo.Re.5pSoeVqcv_; wb_view_log_5897661455=1280*8002; login_sid_t=cf5e8bd6bb1862b4dacf3cdf346c4223; cross_origin_proto=SSL; WBStorage=42212210b087ca50|undefined; wb_view_log=1280*8002"
-    cookie = None
-    if cookie:  # document.cookie
-        headers["Cookie"] = cookie
+def start():
+    global result_comments
+    result_comments = []
+    global headers
+    headers = {}
+    headers = init_headers(headers_str)
+    # 测试请求头
+    print(headers)
     search = input("请输入微博查询关键字：")
     search = search.strip()
+    print("搜索请求为:" + search)
+    # 获取每一个post的初始评论请求
     starts_ajax = get_hot_mid_by_search(search)
-    i = -1
-    threads = []
-    for start in starts_ajax:
-        print(start)
-        hot_ajax(start)
-    print(len(result))
+    for each in starts_ajax:
+        print("开始一个post的评论 yes!!!")
+        # 请求完整的一级评论
+        hot_ajax(each)
+    print(len(result_comments))
     with open("./" + search + ".txt", "w", encoding="utf-8") as f:
-        f.writelines(result)
+        f.write('\n'.join(result_comments))
+    return result_comments
 
+
+start()
 ```
 
