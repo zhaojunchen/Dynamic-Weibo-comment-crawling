@@ -6,8 +6,7 @@ from bs4 import BeautifulSoup
 import time
 from urllib import parse
 
-result = []
-like = []
+result_comments = []
 headers = {}
 headers_str = """
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9
@@ -51,8 +50,7 @@ def __rnd():
 
 # ajax请求
 def get_url(url: str):
-    global result
-    global like
+    global result_comments
     response = requests.get(url, headers=headers)
     if response.status_code != 200:
         print(response)
@@ -73,14 +71,27 @@ def get_url(url: str):
     if response:
         soup = BeautifulSoup(response.get('data').get('html'), "lxml")
         # 解析评论内容
-        comments = soup.find_all("div", attrs={"class": "WB_text"})
-        # 评论字符串
-        for comment in comments:
+        root_comments = soup.find_all("div", attrs={"node-type": "root_comment"})
+        if not root_comments:
+            return None
+        for root_comment in root_comments:
+            like = root_comment.find("a", attrs={"class": "S_txt1", "action-type": "fl_like", "title": "赞"})
+            like = like.find_all("em")[-1].text.strip()
+            if like.isdigit():
+                pass
+            elif like == "赞":
+                like = "0"
+            else:
+                exit(-1)
+            # 只是捕获一级评论 过滤二级评论
+            comment = root_comment.find("div", attrs={"class": "WB_text"})
+            # 评论字符串
             s = "".join([t for t in comment.contents if type(t) == bs4.element.NavigableString])
-            s = s.strip().replace("\n", "").lstrip("：").replace("等人", "").strip()
-            if s:
-                print(s)
-                result.append(s)
+            s = s.strip().replace("\n", "").lstrip("：").replace("等人", "").replace("回复:", "").strip()
+            target = like + "\t:" + s
+            print(target)
+            result_comments.append(target)
+
             # https://www.zhihu.com/question/56861741
 
         action_data = soup.find("a", attrs={"action-type": "click_more_comment"})
@@ -121,7 +132,7 @@ def get_hot_by_search(url):
 # 获取开始请求
 def get_hot_mid_by_search(search: str):
     search = parse.quote(search)
-    search = "https://s.weibo.com/hot?q=%23{0}%23".format(search)
+    search = "https://s.weibo.com/hot?q=%23{0}%23&xsort=hot&suball=1&tw=hotweibo&Refer=weibo_hot".format(search)
     print(search)
     response = requests.get(search)
     html = response.content.decode("utf-8")
@@ -132,7 +143,7 @@ def get_hot_mid_by_search(search: str):
         mid = card.get("mid")
         if mid:
             hot_mids.append(mid)
-    print("热门mid")
+    print("热门mid", end="\t")
     print(hot_mids)
     hot_ajax_start = []
     for mid in hot_mids:
@@ -151,8 +162,8 @@ def hot_ajax(url):
 
 
 def start():
-    global result
-    result = []
+    global result_comments
+    result_comments = []
     global headers
     headers = {}
     headers = init_headers(headers_str)
@@ -164,13 +175,13 @@ def start():
     # 获取每一个post的初始评论请求
     starts_ajax = get_hot_mid_by_search(search)
     for each in starts_ajax:
-        print(each)
+        print("开始一个post的评论 yes!!!")
         # 请求完整的一级评论
         hot_ajax(each)
-    print(len(result))
+    print(len(result_comments))
     with open("./" + search + ".txt", "w", encoding="utf-8") as f:
-        f.write('\n'.join(result))
-    return result
+        f.write('\n'.join(result_comments))
+    return result_comments
 
 
 start()
